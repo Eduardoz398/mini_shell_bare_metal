@@ -57,6 +57,13 @@ _start:
     ldr r1, =.irq_handler
     str r1, [r0]
 
+
+     /* IRQ Handler */
+    ldr r0, =_swi
+    ldr r1, =.swi_handler
+    str r1, [r0]
+
+
     bl main
 
 .loop:    b .loop 
@@ -72,3 +79,11 @@ _start:
         subs pc, lr, #4
 
         
+.swi_handler:
+    stmfd sp!, {r0-r12, lr}
+    MRS r11, spsr
+	bl swi_handler_ 
+    dsb
+    msr spsr, r11
+    ldmfd sp!, {r0-r12, lr}
+     subs pc, lr, #0

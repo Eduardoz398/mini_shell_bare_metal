@@ -7,8 +7,10 @@ BIN=bin/
 
 all: app
 
-app: start.o main.o uart.o wdt.o gpio.o
-	$(CHAIN)-ld $(OBJ)start.o $(OBJ)main.o $(OBJ)uart.o $(OBJ)wdt.o $(OBJ)gpio.o -T $(SRC)memmap.ld -o $(OBJ)main.elf
+app: start.o main.o uart.o wdt.o gpio.o fs.o
+	$(CHAIN)-ld $(OBJ)start.o $(OBJ)main.o $(OBJ)uart.o $(OBJ)wdt.o $(OBJ)gpio.o $(OBJ)fs.o -T $(SRC)memmap.ld -o $(OBJ)main.elf
+	@echo "ELF gerado: $(OBJ)main.elf"
+	$(CHAIN)-size $(OBJ)main.elf
 	$(CHAIN)-objcopy $(OBJ)main.elf $(BIN)spl.boot -O binary
 	cp $(BIN)spl.boot /srv/tftp/appGpio.bin
 
@@ -29,6 +31,9 @@ wdt.o: $(SRC)wdt.s
 
 gpio.o: $(SRC)gpio.s
 	$(CHAIN)-as $(IPATH) $(SRC)gpio.s -o $(OBJ)gpio.o
+
+fs.o: $(SRC)fs.c
+	$(CHAIN)-gcc $(CFLAGS) $(IPATH) -c $(SRC)fs.c -o $(OBJ)fs.o
                                                                       
 
 

@@ -2,14 +2,16 @@
 .equ UART0_LSR,  			0x44E09014
 .equ ASCII, 0x30
 
-.data 
-    buffer: .byte 0
+.equ buffer_max, 100
+
+.data
+line_feed: .asciz "\n\r"
 
 .text
 .global putCh
 .global getCh
 .global putString
-
+.global getString
 
 /*padrão seguido: r0, r1, r2, r3 - parametros
     retorno em r0
@@ -54,57 +56,59 @@ pooling_getCh:
 	bx lr 
 
 
-getStrint:
-    stmfd sp!, {r4-r5, lr} 
+getString:
+    stmfd sp!, {r4-r6, lr} 
 
 	/*
     r0 = char* buf
-    r1 = usigned int lenght
     */
     mov r5, r0   //char o endereço de char* buffer;
     mov r4, #0   //contador
 loop_getString:
-    cmp r4, r1
-    beq return
+    cmp r4, #buffer_max
+    beq return_get_string
     bl getCh 
-    str r0, [r5] 
+    cmp r0, #0xA
+    beq return_get_string
+    cmp r0, #0xD
+    beq return_get_string
+    strb r0, [r5] 
+    bl putCh
     add r5, #1  //buffer[i++]
     add r4, #1   
     b loop_getString
+
+
+return_get_string:
+    mov r4, #0
+    strb r4, [r5]
+
+    ldmfd sp!, {r4-r6, lr} 
+    bx lr
+
 
 
 putString:
  
     /*
     r0 = char* buffer
-    r1 = unsigned int lenght
-    passa o parametro para r6 e r5, pois ao chamar putCh será perdido o o valor de r1 e r0
     */
-
+    
     stmfd sp!, {r4-r6, lr} 
     mov r5, r0
-    mov r6, r1
 
-    mov r4, #0x0
+
 loop_putString:
-    cmp r4, r6
-    bge return
     ldrb r0, [r5]           //passando o char como parametro -- carrega um byte
+    cmp r0, #0
+    beq return_putString
+
     bl putCh
+     
     add r5, #1
-    add r4, #1
     b loop_putString
 
-
-return:
+return_putString:
     ldmfd sp!, {r4-r6, lr} 
     bx lr
 
-
-
-
-    /*
-    r0 = char* buffer
-    r1 = unsigned int lenght
-    passa o parametro para r6 e r5, pois ao chamar putCh será perdido o o valor de r1 e r0
-    */
