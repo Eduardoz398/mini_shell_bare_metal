@@ -163,10 +163,10 @@ void touch(Dir *pwd, char token1[]) {
                 _strcpy(files[i].name, token1);
             }
             
-            // CORREÇÃO: Seta o bit correspondente no diretório
+            
             pwd->files |= (1 << i);
             
-            return; // Importante: sair após criar um arquivo
+            return; 
         }
     }
     
