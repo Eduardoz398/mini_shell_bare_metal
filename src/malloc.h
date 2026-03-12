@@ -4,13 +4,7 @@
 #include "string.h"
 
 
-/* -------------------------
-   Simple static allocator
-   -------------------------
-   - Substitui malloc por alocação linear em um buffer
-   - Não há free (ok para o seu uso: apenas aloca alguns Dir e nomes)
-   - Ajuste HEAP_SIZE se precisar de mais memória em tempo de execução
-*/
+
 #define HEAP_SIZE 8192
 static unsigned char static_heap[HEAP_SIZE];
 static size_t static_heap_top = 0;
