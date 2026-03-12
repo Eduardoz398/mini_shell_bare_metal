@@ -17,7 +17,7 @@ static void *my_malloc(size_t n)
     static_heap_top = (static_heap_top + 3) & ~3;
     if (static_heap_top + n > HEAP_SIZE)
     {
-        /* sem memória suficiente -> comportamento simples: retornar NULL */
+        
         return NULL;
     }
     void *p = &static_heap[static_heap_top];
